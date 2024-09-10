@@ -217,6 +217,59 @@ def _check_ctc(tracks: pd.DataFrame, detections: pd.DataFrame, masks: np.ndarray
             logger.warning(f"{n_components - n_labels} non-connected masks at t={t}.")
 
 
+def load_deepcell_data(masks, json_file_name, name):
+    import json
+
+    f = open(json_file_name)
+    data = json.load(f)
+    """
+    data should have shape 'id':([t0, t1, ..., tn], p_id)
+    """
+    G = nx.DiGraph()
+    id_last_frame_dictionary = {}
+    for key, values in data.items():
+        frames = values[0]
+        id_last_frame_dictionary[int(key)] = int(np.max(frames))
+        for frame in frames:
+            mask_frame = masks[frame]
+            if len(mask_frame.shape) == 2:
+                y, x = np.where(mask_frame == int(key))
+                ym, xm = np.mean(y), np.mean(x)
+                G.add_node(
+                    str(frame) + "_" + str(key), seg_id=int(key), time=frame, y=ym, x=xm
+                )
+            elif len(mask_frame.shape) == 3:
+                z, y, x = np.where(mask_frame == int(key))
+                zm, ym, xm = np.mean(z), np.mean(y), np.mean(x)
+                G.add_node(
+                    str(frame) + "_" + str(key),
+                    seg_id=int(key),
+                    time=frame,
+                    z=zm,
+                    y=ym,
+                    x=xm,
+                )
+
+    for key, values in data.items():
+        frames, parent_id = values[0], int(values[1])
+        for index in range(len(frames) - 1):
+            G.add_edge(
+                str(frames[index]) + "_" + str(key),
+                str(frames[index + 1]) + "_" + str(key),
+            )
+
+        if parent_id != 0:
+            parent_frame = id_last_frame_dictionary[parent_id]
+            min_frame = int(np.min(frames))
+            G.add_edge(
+                str(parent_frame) + "_" + str(parent_id),
+                str(min_frame) + "_" + str(key),
+            )
+    return TrackingGraph(
+        G, segmentation=masks, name=name, label_key="seg_id", frame_key="time"
+    )
+
+
 def load_ctc_data(data_dir, track_path=None, name=None, run_checks=True):
     """Read the CTC segmentations and track file and create TrackingData.
 

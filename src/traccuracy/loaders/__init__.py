@@ -6,6 +6,18 @@ Each loading function must return one TrackingGraph object which has a
 track graph and optionally contains a corresponding segmentation.
 """
 
-from ._ctc import _check_ctc, _get_node_attributes, _load_tiffs, load_ctc_data
+from ._ctc import (
+    _check_ctc,
+    _get_node_attributes,
+    _load_tiffs,
+    load_ctc_data,
+    load_deepcell_data,
+)
 
-__all__ = ["load_ctc_data", "_check_ctc", "_load_tiffs", "_get_node_attributes"]
+__all__ = [
+    "load_ctc_data",
+    "load_deepcell_data",
+    "_check_ctc",
+    "_load_tiffs",
+    "_get_node_attributes",
+]
