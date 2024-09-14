@@ -38,20 +38,20 @@ def get_labels_with_overlap(
         overlapping_res_labels: List[int], labels of res boxes that overlap with gt boxes
         overlaps: List[float], list of IoGT/IoU values for each overlapping pair
     """
-    gt_frame = gt_frame.astype(np.uint16, copy=False)
-    res_frame = res_frame.astype(np.uint16, copy=False)
+    gt_frame = gt_frame.astype(np.int64, copy=False)
+    res_frame = res_frame.astype(np.int64, copy=False)
     gt_props = regionprops(gt_frame)
     gt_boxes = [np.array(gt_prop.bbox) for gt_prop in gt_props]
     gt_boxes = np.array(gt_boxes).astype(np.float64)
     gt_box_labels = np.asarray(
-        [int(gt_prop.label) for gt_prop in gt_props], dtype=np.uint16
+        [int(gt_prop.label) for gt_prop in gt_props], dtype=np.int64
     )
 
     res_props = regionprops(res_frame)
     res_boxes = [np.array(res_prop.bbox) for res_prop in res_props]
     res_boxes = np.array(res_boxes).astype(np.float64)
     res_box_labels = np.asarray(
-        [int(res_prop.label) for res_prop in res_props], dtype=np.uint16
+        [int(res_prop.label) for res_prop in res_props], dtype=np.int64
     )
     if len(gt_props) == 0 or len(res_props) == 0:
         return [], [], []
@@ -65,8 +65,8 @@ def get_labels_with_overlap(
 
     # Find the bboxes that have overlap at all (ind_ corresponds to box number - starting at 0)
     ind_gt, ind_res = np.nonzero(overlaps)
-    ind_gt = np.asarray(ind_gt, dtype=np.uint16)
-    ind_res = np.asarray(ind_res, dtype=np.uint16)
+    ind_gt = np.asarray(ind_gt, dtype=np.int64)
+    ind_res = np.asarray(ind_res, dtype=np.int64)
     overlapping_gt_labels = gt_box_labels[ind_gt]
     overlapping_res_labels = res_box_labels[ind_res]
 
@@ -83,6 +83,7 @@ def get_labels_with_overlap(
         elif overlap == "iogt":
             area_gt = np.count_nonzero(gt_mask)
             overlaps.append(area_inter / area_gt)
+
         else:
             raise ValueError(f"Unknown overlap type: {overlap}")
 
