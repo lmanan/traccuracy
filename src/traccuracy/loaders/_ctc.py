@@ -227,7 +227,7 @@ def load_deepcell_data(masks, json_file_name, name):
     """
     G = nx.DiGraph()
     id_last_frame_dictionary = {}
-    for key, values in data.items():
+    for key, values in tqdm(data.items()):
         frames = values[0]
         id_last_frame_dictionary[int(key)] = int(np.max(frames))
         for frame in frames:
@@ -240,6 +240,10 @@ def load_deepcell_data(masks, json_file_name, name):
                 )
             elif len(mask_frame.shape) == 3:
                 z, y, x = np.where(mask_frame == int(key))
+                if len(z) == 0 and len(y) == 0 and len(x) == 0:
+                    print(
+                        f"for frame {frame} and id {key}, I couldn't locate the object."
+                    )
                 zm, ym, xm = np.mean(z), np.mean(y), np.mean(x)
                 G.add_node(
                     str(frame) + "_" + str(key),
@@ -265,6 +269,12 @@ def load_deepcell_data(masks, json_file_name, name):
                 str(parent_frame) + "_" + str(parent_id),
                 str(min_frame) + "_" + str(key),
             )
+    return TrackingGraph(
+        G, segmentation=masks, name=name, label_key="seg_id", frame_key="time"
+    )
+
+
+def load_graph_masks(G: nx.DiGraph, masks: np.ndarray, name: str):
     return TrackingGraph(
         G, segmentation=masks, name=name, label_key="seg_id", frame_key="time"
     )

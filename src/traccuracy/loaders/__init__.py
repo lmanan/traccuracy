@@ -12,10 +12,12 @@ from ._ctc import (
     _load_tiffs,
     load_ctc_data,
     load_deepcell_data,
+    load_graph_masks,
 )
 
 __all__ = [
     "load_ctc_data",
+    "load_graph_masks",
     "load_deepcell_data",
     "_check_ctc",
     "_load_tiffs",
