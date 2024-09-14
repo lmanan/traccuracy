@@ -36,7 +36,6 @@ def run_metrics(
 
     if not all(isinstance(m, Metric) for m in metrics):
         raise TypeError("metrics must be a list of instantiated Metric objects")
-
     matched = matcher.compute_mapping(gt_data, pred_data)
     results = []
     for _metric in metrics:

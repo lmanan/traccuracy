@@ -45,7 +45,6 @@ class Matcher(ABC):
         matched = self._compute_mapping(
             copy.deepcopy(gt_graph), copy.deepcopy(pred_graph)
         )
-
         # Record matcher info on Matched object
         matched.matcher_info = self.info
 
