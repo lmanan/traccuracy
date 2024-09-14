@@ -86,9 +86,9 @@ class CTCMatcher(Matcher):
                 intersection,
             ) = get_labels_with_overlap(gt_frame, pred_frame, overlap="iogt")
 
-            for i in range(len(overlapping_gt_labels)):
-                gt_label = overlapping_gt_labels[i]
-                pred_label = overlapping_pred_labels[i]
+            for i, (gt_label, pred_label) in enumerate(
+                zip(overlapping_gt_labels, overlapping_pred_labels)
+            ):
                 # CTC metrics only match comp IDs to a single GT ID if there is majority overlap
                 if intersection[i] > 0.5:
                     mapping.append(
