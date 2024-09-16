@@ -234,6 +234,12 @@ def load_deepcell_data(masks, json_file_name, name):
             mask_frame = masks[frame]
             if len(mask_frame.shape) == 2:
                 y, x = np.where(mask_frame == int(key))
+
+                if len(y) == 0 and len(x) == 0:
+                    print(
+                        f"for frame {frame} and id {key}, I couldn't locate the object."
+                    )
+
                 ym, xm = np.mean(y), np.mean(x)
                 G.add_node(
                     str(frame) + "_" + str(key), seg_id=int(key), time=frame, y=ym, x=xm
