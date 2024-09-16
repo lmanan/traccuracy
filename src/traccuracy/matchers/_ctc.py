@@ -62,8 +62,8 @@ class CTCMatcher(Matcher):
                 desc="Matching frames",
             )
         ):
-            gt_frame = mask_gt[i]
-            pred_frame = mask_pred[i]
+            gt_frame = mask_gt[t]  # indexed `i` before, TODO
+            pred_frame = mask_pred[t]  # indexed `i` before, TODO
             gt_frame_nodes = gt.nodes_by_frame[t]
             pred_frame_nodes = pred.nodes_by_frame[t]
 
